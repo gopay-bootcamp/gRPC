@@ -1,0 +1,39 @@
+syntax = "proto3";
+package proto;
+option go_package = "example.com/services";
+
+message RequestForGetBooks {}
+message RequestForGetBook {
+  int64 ID=1;
+}
+message RequestForAddBook {
+  string BookName=1;
+  string AuthorName=2;
+}
+message RequestForUpdateBook {
+  int64 ID=1;
+  string BookName=2;
+  string AuthorName=3;
+}
+message RequestForDeleteBook {
+  int64 ID=1;
+}
+
+message Response {
+  int64 ID=1;
+  string BookName=2;
+  string AuthorName=3;
+}
+message DeleteResponse {
+  int64 flag=1;
+}
+
+service BooksServices {
+  rpc GetBooks(RequestForGetBooks) returns (stream Response);
+  rpc GetBook(RequestForGetBook) returns (Response);
+  rpc AddBook(RequestForAddBook) returns (Response);
+  rpc UpdateBook(RequestForUpdateBook) returns (Response);
+  rpc DeleteBook(RequestForDeleteBook) returns (DeleteResponse);
+
+
+}
