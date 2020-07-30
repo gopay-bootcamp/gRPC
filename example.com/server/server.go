@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
+	proto "gRPC_demo/example.com/services"
 	"google.golang.org/grpc"
 	"net"
-	proto "gRPC_demo/example.com/services"
 )
 
 type server struct {
@@ -22,11 +23,12 @@ var id int64=1
 func main()  {
 	listener,err:=net.Listen("tcp",":8000")
 
-	srvr:=grpc.NewServer()
+	srvr := grpc.NewServer()
 
 	proto.RegisterBooksServicesServer(srvr,&server{})
 
-	if err==nil {
+	if err == nil {
+		fmt.Println("Server running successfully....")
 		srvr.Serve(listener)
 	}
 }
