@@ -19,7 +19,7 @@ type book struct {
 
 var books []book
 
-var id int64=1
+var id int64 = 1
 func main()  {
 	listener,err:=net.Listen("tcp",":8000")
 
@@ -36,16 +36,16 @@ func main()  {
 
 func (s *server) AddBook(ctx context.Context,request *proto.RequestForAddBook) (*proto.Response,error) {
 	var book book
-	book.ID=id
+	book.ID = id
 	book.BookName=request.BookName
 	book.AuthorName=request.AuthorName
-	books=append(books,book)
-	id=id+1
+	books = append(books,book)
+	id = id + 1
 	return &proto.Response{ID: book.ID, BookName: book.BookName, AuthorName: book.AuthorName}, nil
 }
 
 func (s *server) GetBook(ctx context.Context,request *proto.RequestForGetBook) (*proto.Response,error) {
-	requestedBookId:=request.ID
+	requestedBookId := request.ID
 	for _, item := range books {
 		if item.ID == requestedBookId {
 
@@ -62,14 +62,14 @@ func (s *server) GetBooks(request *proto.RequestForGetBooks,stream proto.BooksSe
 }
 
 func (s *server) UpdateBook(ctx context.Context,request *proto.RequestForUpdateBook) (*proto.Response,error) {
-	requestedUpdateId:=request.ID
+	requestedUpdateId := request.ID
 	for index, item := range books {
 		if item.ID == requestedUpdateId {
 			books = append(books[:index], books[index+1:]...)
 			var book book
 			book.ID = requestedUpdateId
-			book.BookName=request.BookName
-			book.AuthorName=request.AuthorName
+			book.BookName = request.BookName
+			book.AuthorName = request.AuthorName
 			books = append(books, book)
 			return &proto.Response{ID: book.ID,BookName: book.BookName,AuthorName: book.AuthorName},nil
 		}
