@@ -21,7 +21,7 @@ var books []book
 
 var id int64 = 1
 func main()  {
-	listener,err:=net.Listen("tcp",":8000")
+	listener, err:=net.Listen("tcp",":8000")
 
 	srvr := grpc.NewServer()
 
@@ -34,34 +34,34 @@ func main()  {
 }
 
 
-func (s *server) AddBook(ctx context.Context,request *proto.RequestForAddBook) (*proto.Response,error) {
+func (s *server) AddBook(ctx context.Context, request *proto.RequestForAddBook) (*proto.Response, error) {
 	var book book
 	book.ID = id
 	book.BookName=request.BookName
 	book.AuthorName=request.AuthorName
-	books = append(books,book)
+	books = append(books, book)
 	id = id + 1
 	return &proto.Response{ID: book.ID, BookName: book.BookName, AuthorName: book.AuthorName}, nil
 }
 
-func (s *server) GetBook(ctx context.Context,request *proto.RequestForGetBook) (*proto.Response,error) {
+func (s *server) GetBook(ctx context.Context, request *proto.RequestForGetBook) (*proto.Response, error) {
 	requestedBookId := request.ID
 	for _, item := range books {
 		if item.ID == requestedBookId {
 
-			return &proto.Response{ID: item.ID,BookName: item.BookName,AuthorName: item.AuthorName},nil
+			return &proto.Response{ID: item.ID, BookName: item.BookName, AuthorName: item.AuthorName}, nil
 		}
 	}
 	return &proto.Response{ID: 0, BookName: "", AuthorName: ""}, nil
 }
-func (s *server) GetBooks(request *proto.RequestForGetBooks,stream proto.BooksServices_GetBooksServer) error {
-	for _,book := range books {
-		stream.Send(&proto.Response{ID: book.ID,BookName: book.BookName,AuthorName: book.AuthorName})
+func (s *server) GetBooks(request *proto.RequestForGetBooks, stream proto.BooksServices_GetBooksServer) error {
+	for _, book := range books {
+		stream.Send(&proto.Response{ID: book.ID, BookName: book.BookName, AuthorName: book.AuthorName})
 	}
 	return nil
 }
 
-func (s *server) UpdateBook(ctx context.Context,request *proto.RequestForUpdateBook) (*proto.Response,error) {
+func (s *server) UpdateBook(ctx context.Context, request *proto.RequestForUpdateBook) (*proto.Response, error) {
 	requestedUpdateId := request.ID
 	for index, item := range books {
 		if item.ID == requestedUpdateId {
@@ -71,17 +71,17 @@ func (s *server) UpdateBook(ctx context.Context,request *proto.RequestForUpdateB
 			book.BookName = request.BookName
 			book.AuthorName = request.AuthorName
 			books = append(books, book)
-			return &proto.Response{ID: book.ID,BookName: book.BookName,AuthorName: book.AuthorName},nil
+			return &proto.Response{ID: book.ID, BookName: book.BookName, AuthorName: book.AuthorName}, nil
 		}
 	}
 	return &proto.Response{ID: 0, BookName: "", AuthorName: ""}, nil
 }
 
-func (s *server) DeleteBook(ctx context.Context,request *proto.RequestForDeleteBook) (*proto.DeleteResponse,error) {
+func (s *server) DeleteBook(ctx context.Context, request *proto.RequestForDeleteBook) (*proto.DeleteResponse, error) {
 	for index, item := range books {
 		if item.ID == request.ID {
 			books = append(books[:index], books[index+1:]...)
-			return &proto.DeleteResponse{Flag: 1},nil
+			return &proto.DeleteResponse{Flag: 1}, nil
 		}
 	}
 	return &proto.DeleteResponse{Flag: 0}, nil
