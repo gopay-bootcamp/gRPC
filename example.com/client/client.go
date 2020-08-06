@@ -65,7 +65,11 @@ func updateBook(client proto.BooksServicesClient, id int64, bookName string, aut
 		fmt.Println(error.Error())
 		return
 	}
-	fmt.Printf("Book updated with ID = %v, Book Name = %v, Author = %v\n", response.ID, response.BookName, response.AuthorName)
+	if response.Flag == 1 {
+		fmt.Printf("Book updated successfully\n")
+	} else {
+		fmt.Printf("book with given id not exists\n")
+	}
 }
 func deleteBook(client proto.BooksServicesClient, id int64) {
 	request := proto.RequestForDeleteBook{ID: id}

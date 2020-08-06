@@ -28,12 +28,15 @@ message DeleteResponse {
   int64 flag=1;
 }
 
+message UpdateResponse {
+  int64 flag=1;
+}
+
 service BooksServices {
   rpc GetBooks(RequestForGetBooks) returns (stream Response);
   rpc GetBook(RequestForGetBook) returns (Response);
   rpc AddBook(RequestForAddBook) returns (Response);
-  rpc UpdateBook(RequestForUpdateBook) returns (Response);
+  rpc UpdateBook(RequestForUpdateBook) returns (UpdateResponse);
   rpc DeleteBook(RequestForDeleteBook) returns (DeleteResponse);
-
 
 }
