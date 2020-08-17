@@ -4,15 +4,15 @@ import (
 	"gRPC/example.com/Model"
 )
 
-var books []Model.Book
+var Books []Model.Book
 var id int64 = 1
 
 func GetBooksUtil() []Model.Book {
-	return books
+	return Books
 }
 
 func GetBookUtil(id int64) Model.Book {
-	for _, item := range books {
+	for _, item := range Books {
 		if item.ID == id {
 			return item
 		}
@@ -23,18 +23,18 @@ func GetBookUtil(id int64) Model.Book {
 func AddBookUtil(newBook Model.Book) Model.Book {
 	newBook.ID=id
 	id=id+1
-	books = append(books, newBook)
+	Books = append(Books, newBook)
 	return newBook
 }
 
 func UpdateBookUtil(id int64,updatedBook Model.Book) bool{
 
-	for index, item := range books {
+	for index, item := range Books {
 		if item.ID == id {
-			books = append(books[:index], books[index+1:]...)
+			Books = append(Books[:index], Books[index+1:]...)
 
 			updatedBook.ID = id
-			books = append(books, updatedBook)
+			Books = append(Books, updatedBook)
 			return true
 		}
 	}
@@ -42,9 +42,9 @@ func UpdateBookUtil(id int64,updatedBook Model.Book) bool{
 }
 
 func DeleteBookUtil(id int64) bool {
-	for index, item := range books {
+	for index, item := range Books {
 		if item.ID == id {
-			books = append(books[:index], books[index+1:]...)
+			Books = append(Books[:index], Books[index+1:]...)
 			return true
 		}
 	}

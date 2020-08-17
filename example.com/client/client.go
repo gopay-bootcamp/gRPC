@@ -7,26 +7,32 @@ import (
 	"google.golang.org/grpc"
 	"io"
 )
-func main() {
-	conn, _ := grpc.Dial("localhost:8000",grpc.WithInsecure())
-	client := proto.NewBooksServicesClient(conn)
-	addBook(client, "My first book", "abc")
-	addBook(client, "My second book", "abc")
-	getBooks(client)
-	getBook(client, 2)
-	getBook(client, 1)
-	getBook(client, 3)
-	updateBook(client, 2, "My second book(updated)", "abc(xyz)")
-	getBook(client, 2)
-	deleteBook(client, 1)
-	getBook(client, 1)
-	deleteBook(client, 1)
+
+type GrpcClient interface {
+	GetBooks() ()
+	GetBook(id int64) ()
+	AddBook(bookName string, AuthorName string) ()
+	UpdateBook(id int64,bookName string, AuthorName string) ()
+	DeleteBook(id int64) ()
 
 }
 
-func getBooks(client proto.BooksServicesClient) {
+type client struct {
+	client proto.BooksServicesClient
+}
+
+
+func newClient() GrpcClient {
+	conn, _ := grpc.Dial("localhost:8000",grpc.WithInsecure())
+	grpcClient := proto.NewBooksServicesClient(conn)
+	return &client{
+		client: grpcClient,
+	}
+}
+
+func (c *client) GetBooks() {
 	request:=proto.RequestForGetBooks{}
-	responseStream, error := client.GetBooks(context.Background(), &request)
+	responseStream, error := c.client.GetBooks(context.Background(), &request)
  	if error != nil {
  		fmt.Println(error.Error())
  		return
@@ -40,27 +46,27 @@ func getBooks(client proto.BooksServicesClient) {
 	}
 
 }
-func addBook(client proto.BooksServicesClient, bookName string, authorName string) {
+func (c *client) AddBook(bookName string, authorName string) {
 	request := proto.RequestForAddBook{BookName: bookName, AuthorName: authorName}
-	response, error := client.AddBook(context.Background(), &request)
+	response, error := c.client.AddBook(context.Background(), &request)
 	if error != nil {
 		fmt.Println(error.Error())
 		return
 	}
 	fmt.Printf("Book added with ID = %v, Book Name = %v, Author = %v\n", response.ID, response.BookName, response.AuthorName)
 }
-func getBook(client proto.BooksServicesClient, id int64) {
+func (c *client) GetBook( id int64) {
 	request := proto.RequestForGetBook{ID: id}
-	response, error := client.GetBook(context.Background(), &request)
+	response, error := c.client.GetBook(context.Background(), &request)
 	if error != nil {
 		fmt.Println(error.Error())
 		return
 	}
 	fmt.Printf("ID = %v, Book Name = %v, Author = %v\n", response.ID, response.BookName, response.AuthorName)
 }
-func updateBook(client proto.BooksServicesClient, id int64, bookName string, authorName string) {
+func (c *client) UpdateBook( id int64, bookName string, authorName string) {
 	request := proto.RequestForUpdateBook{ID: id, BookName: bookName, AuthorName: authorName}
-	response, error := client.UpdateBook(context.Background(), &request)
+	response, error := c.client.UpdateBook(context.Background(), &request)
 	if error != nil {
 		fmt.Println(error.Error())
 		return
@@ -71,9 +77,9 @@ func updateBook(client proto.BooksServicesClient, id int64, bookName string, aut
 		fmt.Printf("book with given id not exists\n")
 	}
 }
-func deleteBook(client proto.BooksServicesClient, id int64) {
+func (c *client) DeleteBook( id int64) {
 	request := proto.RequestForDeleteBook{ID: id}
-	response, error := client.DeleteBook(context.Background(), &request)
+	response, error := c.client.DeleteBook(context.Background(), &request)
 	if error != nil {
 		fmt.Println(error.Error())
 		return
@@ -83,5 +89,23 @@ func deleteBook(client proto.BooksServicesClient, id int64) {
 	} else {
 		fmt.Printf("book with given id not exists\n")
 	}
+
+}
+
+
+func main() {
+
+	client:=newClient()
+
+	client.AddBook( "My first book", "abc")
+	client.AddBook( "My second book", "abc")
+	client.GetBooks()
+	client.GetBook( 2)
+	client.GetBook( 1)
+	client.UpdateBook( 2, "My second book(updated)", "abc(xyz)")
+	client.GetBook( 2)
+	client.DeleteBook( 1)
+	client.GetBooks( )
+	client.DeleteBook( 1)
 
 }
